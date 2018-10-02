@@ -26,8 +26,6 @@ function registerGPIO(devices, cb){
             direction: GPIO.DIRECTION.OUT,
             ready: () => {
                 setGPIO(item.namespace, item.default);
-
-                changeGPIO(item.namespace)
             }
         });
     }
@@ -35,24 +33,7 @@ function registerGPIO(devices, cb){
     cb();
 }
 
-function changeGPIO(key) {
-    gpio[key].on("change", (val) => {
-        let value;
-
-        if(val === 0){
-            value = false
-        }
-
-        if(val === 1){
-            value = true
-        }
-
-        console.log('change', {namespace: key, value});
-
-        socket.emit('updateGPIO', {namespace: key, value});
-    });
-}
-
 function setGPIO(key, val){
    gpio[key].set(val ? 1 : 0);
+   socket.emit('updateGPIO', {namespace: key, val});
 }
