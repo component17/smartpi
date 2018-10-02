@@ -27,24 +27,30 @@ function registerGPIO(devices, cb){
             ready: () => {
                 setGPIO(item.namespace, item.default);
 
-                gpio[item.namespace].on("change", (val) => {
-                    let value;
-
-                    if(val === 0){
-                        value = false
-                    }
-
-                    if(val === 1){
-                        value = true
-                    }
-
-                    socket.emit('updateGPIO', {namespace: item.namespace, value})
-                });
+                changeGPIO(item.namespace)
             }
         });
     }
 
     cb();
+}
+
+function changeGPIO(key) {
+    gpio[key].on("change", (val) => {
+        let value;
+
+        if(val === 0){
+            value = false
+        }
+
+        if(val === 1){
+            value = true
+        }
+
+        console.log('change', {namespace: key, value});
+
+        socket.emit('updateGPIO', {namespace: key, value});
+    });
 }
 
 function setGPIO(key, val){
